@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <title>Wall One</title>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-dark bg-info p-3 d-flex justify-content-around">
+            <h1>Coding Dojo Wall</h1>
+                <h2>Welcome {{current_user.first_name}} !</h2>
+                <a href="/logout" class="btn btn-warning mb-3">Logout</a>
+        </nav>
+        <div class=" container d-flex justify-content-around align-items-center mt-5">
+            <!-- left side container -->
+            <div class ="flex-column bg-warning text-dark p-3" style="width:300px;">
+                <ul class="list-unstyled">
+                    <li>
+                        <h5><u>{{all_posts|length}} Message(s) for You</u></h5>
+                    </li>
+                    {% for each_post in all_posts %}
+                    <ul class ="list-unstyled bg-light mb-3 p-2">
+                        <li>
+                            <p class="text-primary">{{each_post.sender}} send to you {{each_post.time_spend()}} </p>
+                        </li>
+                        <li>
+                            <p>{{each_post.message}}</p>
+                        </li>
+                        <li>
+                            <a href="/post/delete/{{each_post.id}}" class="btn btn-danger">Delete</a>
+                        </li>
+                    </ul>                    
+                    {% endfor %}
+                </ul>
+            </div>
+            <!-- right container -->
+            <div class ="flex-column bg-dark text-warning p-3" style="width:400px; height:560px;">
+                <h2 class="text-success text-center">Send a Message:</h2>
+                <h5>You have sent {{count_message}} messages</h5>
+                {% with messages = get_flashed_messages(category_filter=["post"]) %}
+                    {% if messages %}
+                    <div class ="alert alert-info" role="alert">
+                        {% for message in messages %}
+                            <p class="text-danger">{{message}}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+                {% for u in all_users%}
+                    {% if u.id != session.user_id %}
+                        <form action="/post/create" method="POST">         
+                            <input type= "hidden" name ="sender_id" value = {{session.user_id}}>
+                            <input type= "hidden" name ="receiver_id" value = {{u.id}}>
+                            <label class="form-label" for="receiver_id">Message {{u.first_name}} :</label>
+                            <textarea class="form-control" name="message"></textarea>
+                            <button class="btn btn-success mb-3">Send</button>
+                        </form>
+                    {% endif%}
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+</body>
+</html>
